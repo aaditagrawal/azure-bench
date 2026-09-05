@@ -7,7 +7,7 @@ export default defineConfig({
   root: "web",
   plugins: [
     stylex.vite({
-      useCSSLayers: true,
+      useCSSLayers: false,
       dev: process.env.NODE_ENV === "development",
       runtimeInjection: false,
     }),
