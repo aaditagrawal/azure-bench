@@ -1,3 +1,5 @@
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "@/styles";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { ToggleGroup } from "@/components/ui/toggle-group";
@@ -402,22 +404,18 @@ function SeverityBlock({
       : `${comparison.outcome} than OpenAI`;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div {...stylex.props(styles.comparison)}>
       <div
-        className={`text-[11px] font-medium uppercase tracking-[0.14em] ${
-          isSlower ? "text-red-200" : "text-muted"
-        }`}
+        {...stylex.props([styles.comparisonLabel, (isSlower ? styles.errorText : styles.muted)])}
       >
         {label}
       </div>
       <div
-        className={`font-mono text-4xl font-semibold leading-none tabular-nums md:text-5xl ${
-          isSlower ? "text-red-100" : "text-foreground"
-        }`}
+        {...stylex.props([styles.comparisonValue, (isSlower ? styles.errorValue : styles.foreground)])}
       >
         {value}
       </div>
-      <div className={`text-sm ${isSlower ? "text-red-200/80" : "text-muted"}`}>
+      <div {...stylex.props([styles.smallText, (isSlower ? styles.errorDescription : styles.muted)])}>
         {description}
       </div>
     </div>
@@ -438,7 +436,7 @@ function ExpandableDebugText({
   tone?: "muted" | "error";
 }) {
   if (!text) {
-    return <span className="text-muted">—</span>;
+    return <span {...stylex.props(styles.muted)}>—</span>;
   }
 
   return (
@@ -447,11 +445,7 @@ function ExpandableDebugText({
       aria-expanded={expanded}
       onClick={() => onToggle(id)}
       title={expanded ? "Click to collapse" : text}
-      className={`block w-full text-left transition-colors hover:text-foreground ${
-        expanded
-          ? "cursor-zoom-out whitespace-pre-wrap break-words leading-relaxed"
-          : "cursor-zoom-in truncate"
-      } ${tone === "error" ? "text-red-200" : "text-muted"}`}
+      {...stylex.props([styles.expandableText, (expanded ? styles.expandedText : styles.collapsedText), (tone === "error" ? styles.errorText : styles.muted)])}
     >
       {text}
     </button>
@@ -485,29 +479,29 @@ function RunsDebugView({
   };
 
   return (
-    <div className="min-h-dvh bg-background">
-      <main className="mx-auto w-full max-w-[1500px] px-4 py-8 md:px-6">
-        <header className="mb-6 flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-end md:justify-between">
+    <div {...stylex.props(styles.page)}>
+      <main {...stylex.props(styles.runsContent)}>
+        <header {...stylex.props(styles.runsHeader)}>
           <div>
-            <div className="mb-2 text-xs uppercase tracking-wider text-muted">
+            <div {...stylex.props(styles.eyebrow)}>
               Database View
             </div>
-            <h1 className="text-2xl font-medium tracking-tight">
+            <h1 {...stylex.props(styles.runsTitle)}>
               Benchmark Runs
             </h1>
-            <p className="mt-1 text-sm text-muted">
+            <p {...stylex.props(styles.runsDescription)}>
               One row per prompt attempt result, ordered newest first.
             </p>
           </div>
-          <div className="flex items-center gap-3 text-sm">
+          <div {...stylex.props(styles.runsActions)}>
             <a
-              className="rounded border border-border px-3 py-1.5 text-muted transition-colors hover:border-neutral-600 hover:text-foreground"
+              {...stylex.props(styles.outlineLink)}
               href="/"
             >
               Dashboard
             </a>
             <a
-              className="rounded border border-border px-3 py-1.5 text-muted transition-colors hover:border-neutral-600 hover:text-foreground"
+              {...stylex.props(styles.outlineLink)}
               href="/results.json"
             >
               Raw JSON
@@ -516,20 +510,20 @@ function RunsDebugView({
         </header>
 
         {state.status === "loading" && (
-          <div className="text-sm text-muted">Loading runs…</div>
+          <div {...stylex.props(styles.statusText)}>Loading runs…</div>
         )}
 
         {state.status === "error" && (
-          <div className="rounded border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+          <div {...stylex.props(styles.errorPanel)}>
             Failed to load results: {state.message}
           </div>
         )}
 
         {state.status === "ready" && (
-          <div className="overflow-x-auto border border-border">
-            <table className="w-full min-w-[1520px] border-collapse text-left text-xs">
-              <thead className="sticky top-0 bg-card text-[11px] uppercase tracking-wider text-muted">
-                <tr className="[&>th]:whitespace-nowrap [&>th]:border-b [&>th]:border-border [&>th]:px-2.5 [&>th]:py-2">
+          <div {...stylex.props(styles.tableScroll)}>
+            <table {...stylex.props(styles.table)}>
+              <thead {...stylex.props(styles.tableHeader)}>
+                <tr data-table-head="">
                   <th>Time</th>
                   <th>Provider</th>
                   <th>Deployment</th>
@@ -551,10 +545,10 @@ function RunsDebugView({
                   <th>Reasoning Summary</th>
                 </tr>
               </thead>
-              <tbody className="font-mono tabular-nums">
+              <tbody {...stylex.props(styles.numeric)}>
                 {rows.length === 0 ? (
                   <tr>
-                    <td className="px-3 py-6 text-center text-muted" colSpan={19}>
+                    <td {...stylex.props(styles.emptyTable)} colSpan={19}>
                       No benchmark rows found.
                     </td>
                   </tr>
@@ -572,50 +566,46 @@ function RunsDebugView({
                     return (
                       <tr
                         key={`${row.id}-${row.provider}-${row.status}-${rowIndex}-${index}`}
-                        className={`border-b border-border/70 align-top ${
-                          isFailure ? "bg-red-500/[0.06]" : "odd:bg-white/[0.015]"
-                        }`}
+                        {...stylex.props([styles.tableRow, (isFailure ? styles.failedRow : styles.stripedRow)])}
                       >
-                        <td className="whitespace-nowrap px-2.5 py-2 text-muted">
+                        <td {...stylex.props(styles.timestampCell)}>
                           {formatDateTime(row.createdAt)}
                         </td>
-                        <td className="px-2.5 py-2 text-foreground">
+                        <td {...stylex.props(styles.foregroundCell)}>
                           {row.provider}
                         </td>
-                        <td className="px-2.5 py-2 text-muted">
+                        <td {...stylex.props(styles.mutedCell)}>
                           {row.deployment}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "failed" ? row.failure.index : row.run.index}
                         </td>
                         <td
-                          className={`px-2.5 py-2 ${
-                            isFailure ? "text-red-200" : "text-emerald-200"
-                          }`}
+                          {...stylex.props([styles.cell, (isFailure ? styles.errorText : styles.successText)])}
                         >
                           {row.status}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? formatOptionalInteger(row.run.outputTokens)
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? formatOptionalInteger(row.run.reasoningTokens)
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? formatOptionalInteger(row.run.inputTokens)
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? formatOptionalInteger(row.run.totalTokens)
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? formatOptionalUnit(
                                 row.run.timeToFirstReasoningSummarySeconds,
@@ -623,7 +613,7 @@ function RunsDebugView({
                               )
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? formatOptionalUnit(
                                 row.run.timeToFirstTokenSeconds,
@@ -631,37 +621,37 @@ function RunsDebugView({
                               )
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? formatOptionalUnit(row.run.streamSeconds, "s")
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? formatOptionalUnit(row.run.totalSeconds, "s")
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? formatOptionalUnit(row.run.streamTps, "tps")
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? formatOptionalUnit(row.run.endToEndTps, "tps")
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "ok"
                             ? `$${row.run.costUsd.toFixed(6)}`
                             : "—"}
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td {...stylex.props(styles.cell)}>
                           {row.status === "failed"
                             ? row.failure.attempts
                             : (row.run.attempts ?? 1)}
                         </td>
-                        <td className="w-[360px] max-w-[360px] px-2.5 py-2 font-sans">
+                        <td {...stylex.props(styles.promptCell)}>
                           <ExpandableDebugText
                             expanded={expandedCells.has(promptCellId)}
                             id={promptCellId}
@@ -670,7 +660,7 @@ function RunsDebugView({
                             tone={row.status === "failed" ? "error" : "muted"}
                           />
                         </td>
-                        <td className="w-[420px] max-w-[420px] px-2.5 py-2 font-sans">
+                        <td {...stylex.props(styles.reasoningCell)}>
                           <ExpandableDebugText
                             expanded={expandedCells.has(summaryCellId)}
                             id={summaryCellId}
@@ -832,26 +822,24 @@ function App() {
   const headlineIsSlower =
     headlineComparisons?.mean?.outcome === "slower" ||
     headlineComparisons?.p90?.outcome === "slower";
-  const headlineClassName = headlineIsSlower
-    ? "relative border-b border-red-500/25 bg-gradient-to-b from-red-500/[0.13] to-red-500/[0.06] px-5 py-5 md:px-6 md:py-6"
-    : "relative border-b border-border bg-neutral-950/50 px-5 py-5 md:px-6 md:py-6";
+  const headlineStyle = (headlineIsSlower ? styles.slowerHeadline : styles.headline);
 
   if (window.location.pathname === "/runs") {
     return <RunsDebugView history={history} state={state} />;
   }
 
   return (
-    <div className="min-h-dvh bg-background">
-      <main className="mx-auto w-full max-w-5xl px-6 py-12 md:py-20">
-        <header className="mb-10 flex flex-col gap-1.5">
-          <h1 className="text-2xl font-medium tracking-tight md:text-3xl">
+    <div {...stylex.props(styles.page)}>
+      <main {...stylex.props(styles.dashboardContent)}>
+        <header {...stylex.props(styles.dashboardHeader)}>
+          <h1 {...stylex.props(styles.dashboardTitle)}>
             Azure Sucked* (at hosting OpenAI models)
           </h1>
-          <div className="flex flex-col gap-2 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+          <div {...stylex.props(styles.introduction)}>
             <p>
               * We{" "}
               <a
-                className="underline decoration-muted/60 underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
+                {...stylex.props(styles.sourceLink)}
                 href="https://x.com/theo/status/2014863266888233193"
                 rel="noreferrer"
                 target="_blank"
@@ -860,7 +848,7 @@ function App() {
               </a>{" "}
               for inference. This benchmark lit some fires and{" "}
               <a
-                className="underline decoration-muted/60 underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
+                {...stylex.props(styles.sourceLink)}
                 href="https://x.com/theo/status/2050305813894648289"
                 rel="noreferrer"
                 target="_blank"
@@ -871,15 +859,11 @@ function App() {
           </div>
         </header>
 
-        <Card className="overflow-hidden">
+        <Card className={stylex.props(styles.clip).className}>
           {(headlineComparisons?.mean || headlineComparisons?.p90) && (
-            <div className={headlineClassName}>
+            <div {...stylex.props(headlineStyle)}>
               <div
-                className={`grid gap-y-6 gap-x-10 ${
-                  headlineComparisons.mean && headlineComparisons.p90
-                    ? "grid-cols-1 sm:grid-cols-2"
-                    : "grid-cols-1"
-                }`}
+                {...stylex.props([styles.comparisonGrid, (headlineComparisons.mean && headlineComparisons.p90 ? styles.twoComparisons : styles.oneComparison)])}
               >
                 {headlineComparisons.mean && (
                   <SeverityBlock
@@ -896,8 +880,8 @@ function App() {
               </div>
             </div>
           )}
-          <div className="flex flex-col gap-3 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-wrap items-center gap-2">
+          <div {...stylex.props(styles.toolbar)}>
+            <div {...stylex.props(styles.controls)}>
               <ToggleGroup
                 ariaLabel="Metric"
                 value={metricKey}
@@ -933,9 +917,9 @@ function App() {
                 options={chartRangeOptions}
               />
               {chartRange === "custom" && (
-                <div className="flex flex-wrap items-center gap-1.5 rounded-md border border-border bg-card p-1">
-                  <label className="flex items-center gap-1.5">
-                    <span className="px-1 text-[11px] text-muted">From</span>
+                <div {...stylex.props(styles.dateRange)}>
+                  <label {...stylex.props(styles.dateLabel)}>
+                    <span {...stylex.props(styles.dateCaption)}>From</span>
                     <input
                       type="datetime-local"
                       value={customChartRange.start}
@@ -946,11 +930,11 @@ function App() {
                           start: event.target.value,
                         }));
                       }}
-                      className="h-7 rounded border border-border bg-background px-2 font-mono text-xs text-foreground outline-none transition-colors [color-scheme:dark] focus:border-neutral-500"
+                      {...stylex.props(styles.dateInput)}
                     />
                   </label>
-                  <label className="flex items-center gap-1.5">
-                    <span className="px-1 text-[11px] text-muted">To</span>
+                  <label {...stylex.props(styles.dateLabel)}>
+                    <span {...stylex.props(styles.dateCaption)}>To</span>
                     <input
                       type="datetime-local"
                       value={customChartRange.end}
@@ -961,16 +945,16 @@ function App() {
                           end: event.target.value,
                         }));
                       }}
-                      className="h-7 rounded border border-border bg-background px-2 font-mono text-xs text-foreground outline-none transition-colors [color-scheme:dark] focus:border-neutral-500"
+                      {...stylex.props(styles.dateInput)}
                     />
                   </label>
                 </div>
               )}
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 sm:justify-end">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <div {...stylex.props(styles.legendArea)}>
+              <div {...stylex.props(styles.legend)}>
                 {latestByProvider.length === 0 ? (
-                  <span className="text-xs text-muted">No providers yet</span>
+                  <span {...stylex.props(styles.caption)}>No providers yet</span>
                 ) : (
                   latestByProvider.map((entry) => {
                     const dim =
@@ -986,12 +970,10 @@ function App() {
                         onMouseLeave={() => setHoveredProvider(null)}
                         onFocus={() => setHoveredProvider(entry.provider)}
                         onBlur={() => setHoveredProvider(null)}
-                        className={`flex items-center gap-2 rounded px-1.5 py-0.5 text-xs text-foreground transition-opacity hover:bg-neutral-900 ${
-                          dim ? "opacity-40" : "opacity-100"
-                        }`}
+                        {...stylex.props([styles.providerButton, (dim ? styles.dimmedProvider : styles.visibleProvider)])}
                       >
                         <span
-                          className="inline-block h-1.5 w-1.5 rounded-full"
+                          {...stylex.props(styles.providerDot)}
                           style={{ background: entry.color }}
                         />
                         {entry.provider}
@@ -1000,10 +982,10 @@ function App() {
                   })
                 )}
               </div>
-              <span className="text-xs text-muted">{directionLabel(metric)}</span>
+              <span {...stylex.props(styles.caption)}>{directionLabel(metric)}</span>
             </div>
           </div>
-          <div className="px-2 pt-2 pb-3">
+          <div {...stylex.props(styles.chartPadding)}>
             <ThroughputChart
               records={chartHistory}
               metric={metric}
@@ -1015,7 +997,7 @@ function App() {
         </Card>
 
         {deploymentCallout && (
-          <p className="mt-3 text-center text-xs leading-relaxed text-muted">
+          <p {...stylex.props(styles.deploymentCaption)}>
             {deploymentCallout}
           </p>
         )}

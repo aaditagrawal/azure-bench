@@ -1,4 +1,3 @@
-import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
 import stylex from "@stylexjs/unplugin";
 import react from "@vitejs/plugin-react";
@@ -13,7 +12,6 @@ export default defineConfig({
       runtimeInjection: false,
     }),
     react(),
-    tailwindcss(),
   ],
   resolve: {
     alias: {
