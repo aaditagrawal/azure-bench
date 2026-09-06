@@ -1,5 +1,6 @@
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "@/styles";
 import type { HTMLAttributes } from "react";
-import { cn } from "@/lib/utils";
 
 export function Card({
   className,
@@ -7,10 +8,7 @@ export function Card({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        "rounded-lg border border-border bg-card",
-        className,
-      )}
+      className={[stylex.props(styles.card).className, className].filter(Boolean).join(" ")}
       {...props}
     />
   );

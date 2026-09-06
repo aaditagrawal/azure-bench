@@ -1,3 +1,5 @@
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "@/styles";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Area,
@@ -148,16 +150,14 @@ function ChartTooltip({
     typeof openAIEntry?.value === "number" ? openAIEntry.value : null;
   const comparison = compareAgainstOpenAI(metric, azureValue, openAIValue);
   const comparisonTone =
-    comparison?.outcome === "slower"
-      ? "border-red-500/20 bg-red-500/10 text-red-300"
-      : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
+    (comparison?.outcome === "slower" ? styles.slowerTooltip : styles.fasterTooltip);
 
   return (
-    <div className="min-w-[200px] overflow-hidden rounded-md border border-border bg-card text-xs shadow-lg">
-      <div className="px-3 pb-1.5 pt-2 text-muted">
+    <div {...stylex.props(styles.tooltip)}>
+      <div {...stylex.props(styles.tooltipDate)}>
         {formatTooltipDate(time)}
       </div>
-      <div className="space-y-1 px-3 pb-2">
+      <div {...stylex.props(styles.tooltipStack)} data-tooltip-stack="">
         {lineEntries.map((entry) => {
           const provider = String(entry.dataKey);
           const raw = entry.payload as ChartPoint | undefined;
@@ -172,20 +172,20 @@ function ChartTooltip({
           return (
             <div
               key={provider}
-              className="flex items-center justify-between gap-6"
+              {...stylex.props(styles.tooltipRow)}
             >
-              <span className="flex items-center gap-2 text-foreground">
+              <span {...stylex.props(styles.tooltipProvider)}>
                 <span
-                  className="inline-block h-1.5 w-1.5 rounded-full"
+                  {...stylex.props(styles.providerDot)}
                   style={{ background: entry.color }}
                 />
                 {entry.name}
               </span>
-              <span className="font-mono tabular-nums text-foreground">
+              <span {...stylex.props(styles.tooltipValue)}>
                 {formatChartValue(entry.value, metric)}
-                <span className="ml-1 text-muted">{metric.unit}</span>
+                <span {...stylex.props(styles.tooltipUnit)}>{metric.unit}</span>
                 {showRange && (
-                  <span className="ml-2 text-muted">
+                  <span {...stylex.props(styles.tooltipComparison)}>
                     {metric.format(min as number)}–
                     {metric.format(max as number)}
                   </span>
@@ -196,7 +196,7 @@ function ChartTooltip({
         })}
       </div>
       {comparison && (
-        <div className={`border-t px-3 py-1.5 ${comparisonTone}`}>
+        <div {...stylex.props([styles.tooltipFooter, comparisonTone])}>
           {comparison.outcome === "same"
             ? "performance is the same"
             : `Azure is ${comparison.label}`}
@@ -318,7 +318,7 @@ export function ThroughputChart({
 
   if (data.length === 0) {
     return (
-      <div className="flex h-[420px] items-center justify-center text-sm text-muted">
+      <div {...stylex.props(styles.emptyChart)}>
         No samples yet
       </div>
     );
@@ -343,7 +343,7 @@ export function ThroughputChart({
   return (
     <div
       ref={containerRef}
-      className="relative h-[420px] w-full"
+      {...stylex.props(styles.chart)}
       onMouseLeave={handleMouseLeave}
     >
       <ResponsiveContainer width="100%" height="100%">

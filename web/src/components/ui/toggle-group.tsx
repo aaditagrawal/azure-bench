@@ -1,4 +1,5 @@
-import { cn } from "@/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "@/styles";
 
 type ToggleGroupOption<T extends string> = {
   value: T;
@@ -25,10 +26,7 @@ export function ToggleGroup<T extends string>({
     <div
       role="tablist"
       aria-label={ariaLabel}
-      className={cn(
-        "inline-flex items-center gap-0.5 rounded-md border border-border bg-card p-0.5",
-        className,
-      )}
+      className={[stylex.props(styles.toggleGroup).className, className].filter(Boolean).join(" ")}
     >
       {options.map((option) => {
         const active = value === option.value;
@@ -40,12 +38,7 @@ export function ToggleGroup<T extends string>({
             aria-selected={active}
             onClick={() => onValueChange(option.value)}
             title={option.tooltip ?? option.label}
-            className={cn(
-              "rounded px-2.5 py-1 text-xs whitespace-nowrap transition-colors",
-              active
-                ? "bg-neutral-800 text-foreground"
-                : "text-muted hover:text-foreground",
-            )}
+            {...stylex.props(styles.toggle, (active ? styles.activeToggle : styles.inactiveToggle))}
           >
             {option.label}
           </button>
